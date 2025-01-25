@@ -1,0 +1,6 @@
+PCA Model Statistics:   Metric    Score
+ Accuracy 0.923729
+Precision 0.714286
+   Recall 0.416667
+ F1 Score 0.526316
+AUC Score 0.726415

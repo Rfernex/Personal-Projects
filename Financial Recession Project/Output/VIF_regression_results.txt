@@ -1,0 +1,28 @@
+PCA Logistic Regression Results:                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:                 Regime   No. Observations:                  175
+Model:                          Logit   Df Residuals:                      164
+Method:                           MLE   Df Model:                           10
+Date:                Wed, 22 Jan 2025   Pseudo R-squ.:                  0.6680
+Time:                        16:45:16   Log-Likelihood:                -19.247
+converged:                       True   LL-Null:                       -57.980
+Covariance Type:            nonrobust   LLR p-value:                 1.572e-12
+==================================================================================
+                     coef    std err          z      P>|z|      [0.025      0.975]
+----------------------------------------------------------------------------------
+const             -7.3426      1.943     -3.778      0.000     -11.152      -3.533
+HOUST              2.0564      3.263      0.630      0.529      -4.339       8.452
+PERMIT            -2.5219      3.001     -0.840      0.401      -8.405       3.361
+TOTRESNS          -0.7606      1.705     -0.446      0.655      -4.102       2.581
+DTCTHFNM           8.4762      3.282      2.583      0.010       2.043      14.909
+EXSZUS             0.5449      2.775      0.196      0.844      -4.894       5.984
+EXCAUS             8.4985      3.058      2.779      0.005       2.504      14.493
+EXUSUK             0.2571      1.424      0.181      0.857      -2.533       3.048
+GOLDBAR            4.5389      1.482      3.063      0.002       1.634       7.443
+P/E               -0.1361      0.701     -0.194      0.846      -1.510       1.237
+Dividend Yield     1.7852      1.544      1.156      0.248      -1.242       4.812
+==================================================================================
+
+Possibly complete quasi-separation: A fraction 0.34 of observations can be
+perfectly predicted. This might indicate that there is complete
+quasi-separation. In this case some parameters will not be identified.

@@ -1,25 +1,29 @@
 
 # Install and load required packages
-if (!requireNamespace("pdftools", quietly = TRUE)) {
-  install.packages("pdftools")
-}
-if (!requireNamespace("stringr", quietly = TRUE)) {
-  install.packages("stringr")
-}
-if (!requireNamespace("httr", quietly = TRUE)) {
-  install.packages("httr")
-}
+
+if (!require(tidyverse)) install.packages("tidyverse")
+if (!require(tidytext)) install.packages("tidytext")
+if (!require(rvest)) install.packages("rvest")
+if (!require(pdftools)) install.packages("lubridate")
+if (!require(stringr)) install.packages("purrr")
+if (!require(httr)) install.packages("dplyr")
+if (!require(dplyr)) install.packages("dplyr")
 
 library(pdftools)
 library(stringr)
 library(httr)
+library(dplyr)
+library(tidyverse)
+library(tidytext)
+library(rvest)
 
 # SCRAPING MONETARY POLICY STATEMENTS
 
-output_dir <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Project BoJ/Data/processed"
+output_dir <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Projects/Project BoJ/Data/processed"
 
 # Set main urls
 url_boj_decision <- paste0("https://www.boj.or.jp/en/mopo/mpmdeci/state_",1998:2023,"/index.htm")
+
 
 # Collect the urls of each decision statement
 collect_boj_decision_urls <- function(x) {
@@ -136,5 +140,8 @@ decision_content_df <- bind_rows(decision_content_HTM_df, decision_content_PDF_d
   month_year = format(date, "%Y-%m")  # Create month-year as YYYY-MM
 ) %>% arrange(month_year)
 
+cleaned_decision_content_df <- decision_content_df %>% mutate(text = gsub('(\\(Reference\\)|Meeting hours|Voting for|Started \\d{1,2}:\\d{2} [ap]\\.m\\.).*', '', text)) %>%
+  mutate(text = gsub('.*\\[PDF \\d+KB\\]\\s*', '', text))
+
 # Write CSV files to the specified directory
-write.csv(decision_content_df, file.path(output_dir, "Statements_boj_df.csv"), row.names = FALSE)
+write.csv(cleaned_decision_content_df, file.path(output_dir, "Statements_boj_df.csv"), row.names = FALSE)
