@@ -19,10 +19,10 @@ library(rvest)
 
 # SCRAPING MONETARY POLICY STATEMENTS
 
-output_dir <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Projects/Project BoJ/Data/processed"
+output_dir <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Projects/Project BoJ (Ongoing)/Data/processed"
 
 # Set main urls
-url_boj_decision <- paste0("https://www.boj.or.jp/en/mopo/mpmdeci/state_",1998:2023,"/index.htm")
+url_boj_decision <- paste0("https://www.boj.or.jp/en/mopo/mpmdeci/state_",1998:2024,"/index.htm")
 
 
 # Collect the urls of each decision statement

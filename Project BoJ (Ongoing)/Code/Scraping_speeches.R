@@ -17,10 +17,10 @@ library(dplyr)
 # SCRAPING SPEECHES
 
 # Sets output directory
-output_dir <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Project BoJ/Data/processed"
+output_dir <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Projects/Project BoJ (Ongoing)/Data/processed"
 
 # Retrieves main urls 
-url_boj_speech_after2011 <- paste0("https://www.boj.or.jp/en/about/press/koen_",2011:2023,"/index.htm")
+url_boj_speech_after2011 <- paste0("https://www.boj.or.jp/en/about/press/koen_",2011:2024,"/index.htm")
 url_boj_speech_before2011 <- paste0("https://www2.boj.or.jp/archive/en/announcements/press/koen_",1998:2010,"/index.htm")
 
 # Single function to collect URLs

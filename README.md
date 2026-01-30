@@ -1,2 +1,2 @@
 # Projects
-Resources associated with the projects presented on my portfolio 
+Diverse personal projects I work on in my spare time or that I completed within the scope of my previous master. 

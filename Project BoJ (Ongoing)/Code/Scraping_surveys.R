@@ -1,20 +1,26 @@
 # SCRAPING SURVEY TABLES
 
 # Install and load required packages
-if (!requireNamespace("rvest", quietly = TRUE)) {
-  install.packages("rvest")}
-if (!requireNamespace("httr", quietly = TRUE)) {
-  install.packages("httr")}
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  install.packages("dplyr")}
+if (!require(tidyverse)) install.packages("tidyverse")
+if (!require(tidytext)) install.packages("tidytext")
+if (!require(rvest)) install.packages("rvest")
+if (!require(lubridate)) install.packages("lubridate")
+if (!require(purrr)) install.packages("purrr")
+if (!require(dplyr)) install.packages("dplyr")
+if (!require(dplyr)) install.packages("httr")
 
+# Load libraries
+library(tidyverse)
+library(tidytext)
 library(rvest)
-library(httr)
+library(lubridate)
+library(purrr)
 library(dplyr)
+library(httr)
 
 # Set the webpage URL
 webpage_url <- "https://www.boj.or.jp/en/research/o_survey/index.htm"
-output_directory <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Project BoJ/Data/pre-processed"  # Specify your directory
+output_directory <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Projects/Project BoJ (Ongoing)/Data/pre-processed"  # Specify your directory
 
 # Read the webpage and get the first CSV link
 webpage <- read_html(webpage_url)
@@ -107,7 +113,7 @@ future_situation_df <- create_question_df(filtered_survey_table, 17:19)%>%
   select(month_year, everything(), -Dates) %>%  # Move month_year first and drop Dates
   arrange(month_year)
 
-perception_rates_df <- create_question_df(filtered_survey_table, 21:22)%>%
+perception_rates_df <- create_question_df(filtered_survey_table, 21:23)%>%
   mutate(
     month_year = format(parse_date_time(Dates, "Y m!"), "%Y-%m")
   ) %>%
@@ -116,7 +122,7 @@ perception_rates_df <- create_question_df(filtered_survey_table, 21:22)%>%
 
 rm(webpage)
 
-output_dir <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Project BoJ/Data/processed"
+output_dir <- "/Users/rfernex/Documents/Education/SciencesPo/Courses/CSS/Projects/Project BoJ (Ongoing)/Data/processed"
 
 # Write CSV files to the specified directory
 write.csv(past_situation_df, file.path(output_dir, "survey_past_situation_df.csv"), row.names = FALSE)
