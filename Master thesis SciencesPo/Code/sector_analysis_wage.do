@@ -1,0 +1,97 @@
+
+* ==============================================================================
+* SCRIPT 1: EMPLOYER SECTOR ANALYSIS (TYPES 1 & 3 ONLY)
+* Variable: nafemp2g010n
+* Uses the sector of activity of the secondary employer, we restrict to the categories SE+W and W+W
+* This is meant as a sanity check for the CSS approximation 
+* ==============================================================================
+
+* --- 1. Clean Slate ---
+foreach v in sec_emp is_sec* plot_year sub_sample p_sec* lb_sec* ub_sec* {
+    capture drop `v'
+}
+
+* --- 2. Define Sector from Employer Variable ---
+gen byte sec_emp = .
+replace sec_emp = 1  if regexm(nafemp2g010n, "AZ") // Agriculture
+replace sec_emp = 2  if regexm(nafemp2g010n, "BE") // Industry
+replace sec_emp = 3  if regexm(nafemp2g010n, "FZ") // Construction
+replace sec_emp = 4  if regexm(nafemp2g010n, "GI") // Trade/Trans/Rest
+replace sec_emp = 5  if regexm(nafemp2g010n, "JZ") // Info & Comm
+replace sec_emp = 6  if regexm(nafemp2g010n, "KZ") // Finance
+replace sec_emp = 7  if regexm(nafemp2g010n, "LZ") // Real Estate
+replace sec_emp = 8  if regexm(nafemp2g010n, "MN") // Sci/Tech/Admin
+replace sec_emp = 9  if regexm(nafemp2g010n, "OQ") // Pub/Edu/Health
+replace sec_emp = 10 if regexm(nafemp2g010n, "RU") // Other Services
+label define sec_lbl 1 "Agri" 2 "Ind" 3 "Const" 4 "Trade" 5 "Info" 6 "Fin" 7 "RealEst" 8 "Sci/Tech" 9 "Pub/Edu" 10 "Other", replace
+label values sec_emp sec_lbl
+
+* Create Dummies
+forvalues k = 1/10 {
+    gen byte is_sec`k' = (sec_emp == `k')
+}
+
+* --- 3. Analysis Loop (Types 1 and 3 ONLY) ---
+gen plot_year = .
+foreach pt in 1 3 {
+    * Initialize storage
+    forvalues s = 1/10 {
+        gen p_sec`s'_pt`pt' = .
+        gen lb_sec`s'_pt`pt' = .
+        gen ub_sec`s'_pt`pt' = .
+    }
+
+    display "Processing Employer Sector for Type `pt'..."
+
+    * Define Subpopulation (Wage earners in 2nd job)
+    capture drop sub_sample
+    gen byte sub_sample = (acteu == 1 & annee >= 2013 & annee <= 2020 & plur_type == `pt' & !missing(sec_emp))
+
+    forvalues s = 1/10 {
+        quietly svy, subpop(sub_sample): regress is_sec`s' i.annee
+
+        capture quietly margins annee
+        if _rc == 0 {
+            matrix M = r(table)
+            local row_idx = 1
+            forvalues y = 2013/2020 {
+                replace plot_year = `y' in `row_idx'
+                capture replace p_sec`s'_pt`pt'  = M[1, colnumb(M, "`y'.annee")] in `row_idx'
+                capture replace lb_sec`s'_pt`pt' = M[5, colnumb(M, "`y'.annee")] in `row_idx'
+                capture replace ub_sec`s'_pt`pt' = M[6, colnumb(M, "`y'.annee")] in `row_idx'
+                local row_idx = `row_idx' + 1
+            }
+        }
+    }
+    drop sub_sample
+}
+
+* --- 4. Plotting ---
+foreach pt in 1 3 {
+    local graph_cmd "twoway "
+
+    * Ribbons
+    forvalues s = 1/10 {
+        local graph_cmd "`graph_cmd' (rarea lb_sec`s'_pt`pt' ub_sec`s'_pt`pt' plot_year if plot_year <= 2020, color(%10) lw(none)) "
+    }
+
+    * Lines
+    local graph_cmd "`graph_cmd' (connected p_sec1_pt`pt' plot_year if plot_year <= 2020, msymbol(circle) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec2_pt`pt' plot_year if plot_year <= 2020, msymbol(square) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec3_pt`pt' plot_year if plot_year <= 2020, msymbol(triangle) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec4_pt`pt' plot_year if plot_year <= 2020, msymbol(diamond) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec5_pt`pt' plot_year if plot_year <= 2020, msymbol(plus) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec6_pt`pt' plot_year if plot_year <= 2020, msymbol(x) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec7_pt`pt' plot_year if plot_year <= 2020, msymbol(smcircle) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec8_pt`pt' plot_year if plot_year <= 2020, msymbol(smsquare) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec9_pt`pt' plot_year if plot_year <= 2020, msymbol(smtriangle) msize(vsmall)) "
+    local graph_cmd "`graph_cmd' (connected p_sec10_pt`pt' plot_year if plot_year <= 2020, msymbol(smdiamond) msize(vsmall)) "
+
+    * Legend: Vertical (cols 1) and on the Right (pos 3)
+    local graph_cmd "`graph_cmd', title("Type `pt'") ytitle("Share") xtitle("") xlabel(2013(2)2020) xline(2018, lpattern(dash) lcolor(gs6)) legend(order(11 "Agri" 12 "Ind" 13 "Const" 14 "Trade" 15 "Info" 16 "Fin" 17 "RealEst" 18 "Sci/Tech" 19 "Pub/Edu" 20 "Other") size(small) cols(1) position(3)) name(g_emp_`pt', replace)"
+
+    `graph_cmd'
+}
+
+graph combine g_emp_1 g_emp_3, title("Sector (Employer Based)") note("Types 1 & 3 Only") ycommon xcommon
+graph export "output/plract_sector_employer_vlegend.png", replace width(2400)

@@ -1,0 +1,84 @@
+* --- Step 0: Create Variables ---
+capture drop is_plur
+gen byte is_plur = (plract == 1)
+
+******************** YEARLY ********************************
+
+* Initialize plotting variables (Yearly specific)
+capture drop plot_year p_plur_y lb_plur_y ub_plur_y
+gen plot_year = .
+gen p_plur_y = .
+gen lb_plur_y = .
+gen ub_plur_y = .
+
+* --- Step 1: Run Regression & Extract ---
+quietly svy, subpop(if acteu == 1 & annee >= 2013 & annee <= 2020): regress is_plur i.annee
+quietly margins annee
+matrix M = r(table)
+
+local row = 1
+forvalues y = 2013/2020 {
+    replace plot_year = `y' in `row'
+    * Extract using the year integer value
+    capture replace p_plur_y  = M[1, colnumb(M, "`y'.annee")] in `row'
+    capture replace lb_plur_y = M[5, colnumb(M, "`y'.annee")] in `row'
+    capture replace ub_plur_y = M[6, colnumb(M, "`y'.annee")] in `row'
+    local row = `row' + 1
+}
+
+* --- Step 2: Plot ---
+twoway ///
+    (rarea lb_plur_y ub_plur_y plot_year if plot_year <= 2020, color(navy%20) lw(none)) ///
+    (connected p_plur_y plot_year if plot_year <= 2020, color(navy) msymbol(circle) msize(small)), ///
+    title("Overall Evolution of Pluriactivity (2013-2020)") ///
+    ytitle("Proportion of Active Population") ///
+    xtitle("Year") ///
+    xlabel(2013(1)2020) ///
+    legend(off) ///
+    note("Source: Enquête Emploi (2013-2020). Shaded area represents 95% CI.")
+
+* Save Yearly Graph
+capture mkdir "output"
+graph export "output/plract_yearly.png", replace width(2000)
+
+
+******************** TRIMESTER ********************************
+
+* --- Step 1: Define Time Range ---
+local start = yq(2013, 1)
+local end   = yq(2020, 4)
+
+* Initialize plotting variables (Quarterly specific)
+capture drop plot_date p_plur_q lb_plur_q ub_plur_q
+gen plot_date = .
+gen p_plur_q = .
+gen lb_plur_q = .
+gen ub_plur_q = .
+
+* --- Step 2: Run Regression & Extract ---
+quietly svy, subpop(if acteu == 1 & date >= `start' & date <= `end'): regress is_plur i.date
+quietly margins date
+matrix M = r(table)
+
+local row = 1
+forvalues t = `start'/`end' {
+    replace plot_date = `t' in `row'
+    capture replace p_plur_q  = M[1, colnumb(M, "`t'.date")] in `row'
+    capture replace lb_plur_q = M[5, colnumb(M, "`t'.date")] in `row'
+    capture replace ub_plur_q = M[6, colnumb(M, "`t'.date")] in `row'
+    local row = `row' + 1
+}
+
+* --- Step 3: Plot ---
+twoway ///
+    (rarea lb_plur_q ub_plur_q plot_date if plot_date <= `end', color(navy%20) lw(none)) ///
+    (connected p_plur_q plot_date if plot_date <= `end', color(navy) msymbol(circle) msize(small)), ///
+    title("Overall Evolution of Pluriactivity (Quarterly)") ///
+    ytitle("Proportion of Active Population") ///
+    xtitle("Quarter") ///
+    xlabel(`start'(4)`end', format(%tq) angle(45)) ///
+    legend(off) ///
+    note("Source: Enquête Emploi (2013-2020). Shaded area represents 95% CI.")
+
+* Save Quarterly Graph
+graph export "output/plract_quarterly.png", replace width(2000)

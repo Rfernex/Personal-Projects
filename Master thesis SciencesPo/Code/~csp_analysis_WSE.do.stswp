@@ -1,0 +1,93 @@
+* ==============================================================================
+* SCRIPT 3 (REVISED): W+SE CONTRIBUTION BY SKILL LEVEL
+* Denominator: Total Active Population (acteu == 1)
+* Numerator: W+SE (Type 2) belonging to specific Skill Group
+* ==============================================================================
+
+* --- 1. Clean Slate ---
+foreach v in skill_cat is_w_se plot_year sub_sample p_skill* lb_skill* ub_skill* cse_str target* {
+    capture drop `v'
+}
+
+* --- 2. Define Skill Categories from cse (Main Job) ---
+tostring cse, gen(cse_str) force
+gen byte skill_cat = .
+
+* Group 1: Managers / High Skilled (Cadres)
+* Codes: 30s
+replace skill_cat = 1 if regexm(cse_str, "^3")
+
+* Group 2: Intermediate Professions (Prof. Interm.)
+* Codes: 40s
+replace skill_cat = 2 if regexm(cse_str, "^4")
+
+* Group 3: Skilled Employees & Workers (Qualifiés)
+* Codes: 52 (Public Civils), 54 (Admin Ent), 62 (Skilled Ind), 63 (Skilled Craft), 65 (Skilled Transport)
+* Removed: 53 (Police/Mil), 64 (Drivers)
+replace skill_cat = 3 if regexm(cse_str, "^52") | regexm(cse_str, "^54") | regexm(cse_str, "^62") | regexm(cse_str, "^63") | regexm(cse_str, "^65")
+
+* Group 4: Low/Unskilled Employees & Workers (Peu/Non Qualifiés)
+* Codes: 55 (Commerce), 56 (Pers. Services), 67 (Unskilled Ind), 68 (Unskilled Craft), 69 (Agri Workers)
+* Added: 64 (Drivers), 10-19 (Farmers - though usually SE main job)
+replace skill_cat = 4 if regexm(cse_str, "^55") | regexm(cse_str, "^56") | regexm(cse_str, "^67") | regexm(cse_str, "^68") | regexm(cse_str, "^69") | regexm(cse_str, "^64") | regexm(cse_str, "^1")
+
+label define skill_lbl 1 "Managers (Cadres)" 2 "Intermediate" 3 "Skilled Workers" 4 "Low/Unskilled"
+label values skill_cat skill_lbl
+
+* --- 3. Define Outcome: W+SE (Broad) ---
+gen byte is_w_se = (plur_type == 2)
+
+* --- 4. Analysis: Share of TOTAL Workforce ---
+gen plot_year = .
+
+* Define Subpopulation: ALL Employed (Denominator)
+capture drop sub_sample
+gen byte sub_sample = (acteu == 1 & annee >= 2013 & annee <= 2020)
+
+* Loop over the 4 Skill Categories
+forvalues k = 1/4 {
+    gen p_skill`k' = .
+    gen lb_skill`k' = .
+    gen ub_skill`k' = .
+
+    display "Processing Skill Group `k'..."
+
+    * Numerator: Is W+SE AND belongs to Skill Group `k`
+    capture drop target_`k'
+    gen byte target_`k' = (is_w_se == 1 & skill_cat == `k')
+
+    quietly svy, subpop(sub_sample): regress target_`k' i.annee
+
+    capture quietly margins annee
+    if _rc == 0 {
+        matrix M = r(table)
+        local row_idx = 1
+        forvalues y = 2013/2020 {
+            replace plot_year = `y' in `row_idx'
+            capture replace p_skill`k'  = M[1, colnumb(M, "`y'.annee")] in `row_idx'
+            capture replace lb_skill`k' = M[5, colnumb(M, "`y'.annee")] in `row_idx'
+            capture replace ub_skill`k' = M[6, colnumb(M, "`y'.annee")] in `row_idx'
+            local row_idx = `row_idx' + 1
+        }
+    }
+}
+
+* --- 5. Plotting ---
+twoway ///
+    (rarea lb_skill1 ub_skill1 plot_year if plot_year <= 2020, color(navy%10) lw(none)) ///
+    (rarea lb_skill4 ub_skill4 plot_year if plot_year <= 2020, color(maroon%10) lw(none)) ///
+    (connected p_skill1 plot_year if plot_year <= 2020, color(navy) msymbol(circle) lpattern(solid) lwidth(medthick)) ///
+    (connected p_skill2 plot_year if plot_year <= 2020, color(teal) msymbol(triangle) lpattern(dash)) ///
+    (connected p_skill3 plot_year if plot_year <= 2020, color(orange) msymbol(square) lpattern(dash)) ///
+    (connected p_skill4 plot_year if plot_year <= 2020, color(maroon) msymbol(diamond) lpattern(solid) lwidth(medthick)) ///
+    , ///
+    title("Contribution to W+SE Pluriactivity by Skill Level") ///
+    subtitle("Share of Total Workforce (All Employed) that is W+SE in each Category") ///
+    ytitle("Share of Total Workforce (%)") xtitle("") ///
+    xlabel(2013(1)2020) ///
+    xline(2018, lpattern(dash) lcolor(gs6)) ///
+    legend(order(3 "Managers (Cadres)" 4 "Intermediate" 5 "Skilled Workers" 6 "Low/Unskilled") pos(6) rows(1)) ///
+    note("Source: cse (Main Job) & Plur_Type=2. Denominator: Total Active Population.") ///
+    name(g_skill_wse, replace)
+
+graph export "output/plract_wse_by_skill_level_total_share.png", replace width(2400)

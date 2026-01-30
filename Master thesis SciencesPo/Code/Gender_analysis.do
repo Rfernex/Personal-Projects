@@ -1,0 +1,170 @@
+
+* ==============================================================================
+* SCRIPT 1: GENDER ANALYSIS 
+* Variable: SEXE
+* ==============================================================================
+
+* --- Step 0: Clean Slate ---
+foreach v in is_type* plot_year plot_date p1* p2* p3* p4* lb* ub* p_q* {
+    capture drop `v'
+}
+
+* --- Step 1: Create Dummy Variables ---
+gen byte is_type1 = (plur_type == 1)
+gen byte is_type2 = (plur_type == 2)
+gen byte is_type3 = (plur_type == 3)
+gen byte is_type4 = (plur_type == 4)
+
+* Define Gender variable
+local title1 "Men"
+local title2 "Women"
+
+******************** YEARLY ANALYSIS BY GENDER ********************************
+
+* --- Define Reform Dates (Integers) ---
+local ref1_y = 2018
+local ref2_y = 2019
+
+* --- Step 2: Initialize Plotting Variables (Yearly) ---
+gen plot_year = .
+* Create variables for both genders: p1_1 (Male Type 1), p1_2 (Female Type 1), etc.
+foreach s in 1 2 {
+    foreach c in 1 2 3 4 {
+        gen p`c'_`s' = .
+        gen lb`c'_`s' = .
+        gen ub`c'_`s' = .
+    }
+}
+
+* --- Step 3: Run Regressions & Extract Data ---
+foreach s in 1 2 {
+    display "Processing Yearly Data for sexe = `s'..."
+
+    forvalues c = 1/4 {
+        * Filter by sexe in the subpop
+        quietly svy, subpop(if acteu == 1 & annee >= 2013 & annee <= 2020 & sexe == `s'): regress is_type`c' i.annee
+        quietly margins annee
+        matrix M = r(table)
+
+        local row_idx = 1
+        forvalues y = 2013/2020 {
+            * We only need to set plot_year once, but doing it repeatedly is harmless
+            replace plot_year = `y' in `row_idx'
+
+            capture replace p`c'_`s'  = M[1, colnumb(M, "`y'.annee")] in `row_idx'
+            capture replace lb`c'_`s' = M[5, colnumb(M, "`y'.annee")] in `row_idx'
+            capture replace ub`c'_`s' = M[6, colnumb(M, "`y'.annee")] in `row_idx'
+            local row_idx = `row_idx' + 1
+        }
+    }
+}
+
+* --- Step 4: Plot Side-by-Side (Yearly) with Vertical Legend ---
+local title1 "Men"
+local title2 "Women"
+local ref1_y = 2018
+local ref2_y = 2019
+
+foreach s in 1 2 {
+    twoway ///
+        (rarea lb1_`s' ub1_`s' plot_year if plot_year <= 2020, color(navy%20) lw(none)) ///
+        (rarea lb2_`s' ub2_`s' plot_year if plot_year <= 2020, color(maroon%20) lw(none)) ///
+        (rarea lb3_`s' ub3_`s' plot_year if plot_year <= 2020, color(forest_green%20) lw(none)) ///
+        (rarea lb4_`s' ub4_`s' plot_year if plot_year <= 2020, color(dkorange%20) lw(none)) ///
+        (connected p1_`s' plot_year if plot_year <= 2020, color(navy) msymbol(circle) msize(small)) ///
+        (connected p2_`s' plot_year if plot_year <= 2020, color(maroon) msymbol(square) msize(small)) ///
+        (connected p3_`s' plot_year if plot_year <= 2020, color(forest_green) msymbol(triangle) msize(small)) ///
+        (connected p4_`s' plot_year if plot_year <= 2020, color(dkorange) msymbol(diamond) msize(small)), ///
+        xline(`ref1_y', lpattern(dash) lcolor(gs8)) ///
+        xline(`ref2_y', lpattern(dash) lcolor(gs8)) ///
+        text(0.05 `ref1_y' "Micro", orient(vertical) size(vsmall) place(w)) ///
+        text(0.05 `ref2_y' "Chôm", orient(vertical) size(vsmall) place(w)) ///
+        legend(order(5 "Salaried + Salaried" 6 "Salaried + Self-Employed" 7 "Self-Employed + Salaried" 8 "Self-Employed + Self-Employed") cols(1)) ///
+        title("`title`s''") ///
+        ytitle("Proportion") xtitle("") ///
+        xlabel(2013(1)2020) ///
+        name(g_y_`s', replace)
+}
+
+graph combine g_y_1 g_y_2, ///
+    ycommon xcommon ///
+    title("Evolution of Pluriactivity by Gender (Yearly)") ///
+    note("Source: Enquête Emploi (2013-2020).") ///
+    legend(from(g_y_1) position(3) cols(1)) ///
+    rows(1)
+
+graph export "output/plract_gender_yearly.png", replace width(2400)
+
+
+******************** TRIMESTER ANALYSIS BY GENDER ********************************
+
+* --- Step 1: Define Time Range (Using Globals for Robustness) ---
+global start_q = yq(2013, 1)
+global end_q   = yq(2020, 4)
+global ref1_q  = yq(2018, 2)
+global ref2_q  = yq(2019, 3)
+
+* --- Step 2: Initialize Plotting Variables (Quarterly) ---
+gen plot_date = .
+foreach s in 1 2 {
+    foreach c in 1 2 3 4 {
+        gen p_q`c'_`s' = .
+        gen lb_q`c'_`s' = .
+        gen ub_q`c'_`s' = .
+    }
+}
+
+* --- Step 3: Run Regressions & Extract Data ---
+foreach s in 1 2 {
+    display "Processing Quarterly Data for sexe = `s'..."
+
+    forvalues c = 1/4 {
+        quietly svy, subpop(if acteu == 1 & date >= $start_q & date <= $end_q & sexe == `s'): regress is_type`c' i.date
+        quietly margins date
+        matrix M = r(table)
+
+        local row = 1
+        forvalues t = $start_q/$end_q {
+            replace plot_date = `t' in `row'
+            capture replace p_q`c'_`s'  = M[1, colnumb(M, "`t'.date")] in `row'
+            capture replace lb_q`c'_`s' = M[5, colnumb(M, "`t'.date")] in `row'
+            capture replace ub_q`c'_`s' = M[6, colnumb(M, "`t'.date")] in `row'
+            local row = `row' + 1
+        }
+    }
+}
+
+* --- Step 4: Plot ---
+local title1 "Men"
+local title2 "Women"
+
+foreach s in 1 2 {
+    twoway ///
+        (rarea lb_q1_`s' ub_q1_`s' plot_date if plot_date <= $end_q, color(navy%20) lw(none)) ///
+        (rarea lb_q2_`s' ub_q2_`s' plot_date if plot_date <= $end_q, color(maroon%20) lw(none)) ///
+        (rarea lb_q3_`s' ub_q3_`s' plot_date if plot_date <= $end_q, color(forest_green%20) lw(none)) ///
+        (rarea lb_q4_`s' ub_q4_`s' plot_date if plot_date <= $end_q, color(dkorange%20) lw(none)) ///
+        (connected p_q1_`s' plot_date if plot_date <= $end_q, color(navy) msymbol(circle) msize(vsmall)) ///
+        (connected p_q2_`s' plot_date if plot_date <= $end_q, color(maroon) msymbol(square) msize(vsmall)) ///
+        (connected p_q3_`s' plot_date if plot_date <= $end_q, color(forest_green) msymbol(triangle) msize(vsmall)) ///
+        (connected p_q4_`s' plot_date if plot_date <= $end_q, color(dkorange) msymbol(diamond) msize(vsmall)), ///
+        xline($ref1_q, lpattern(dash) lcolor(gs8)) ///
+        xline($ref2_q, lpattern(dash) lcolor(gs8)) ///
+        text(0.05 $ref1_q "Micro", orient(vertical) size(vsmall) place(w)) ///
+        text(0.05 $ref2_q "Chôm", orient(vertical) size(vsmall) place(w)) ///
+        legend(order(5 "Salaried + Salaried" 6 "Salaried + Self-Employed" 7 "Self-Employed + Salaried" 8 "Self-Employed + Self-Employed") cols(1)) ///
+        title("`title`s''") ///
+        ytitle("Proportion") xtitle("") ///
+        xlabel($start_q(8)$end_q, format(%tq) angle(45)) ///
+        name(g_q_`s', replace)
+}
+
+* Combine graphs and place legend on the right (Position 3)
+graph combine g_q_1 g_q_2, ///
+    ycommon xcommon ///
+    title("Evolution of Pluriactivity by Gender (Quarterly)") ///
+    note("Source: Enquête Emploi (2013-2020).") ///
+    legend(from(g_q_1) position(3) cols(1)) ///
+    rows(1)
+
+graph export "output/plract_gender_quarterly.png", replace width(2400)
