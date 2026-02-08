@@ -1,0 +1,10 @@
+# A tibble: 7 × 4
+   cser `Hybrid Entrepreneurs` `Non-Entrepreneurs` `Poly-Entrepreneurs`
+  <dbl>                  <dbl>               <dbl>                <dbl>
+1     1                 22.5                 1.67                 4.27 
+2     2                 21.8                 6.46                34.4  
+3     3                 31.2                18.3                 23.5  
+4     4                 23.7                25.6                 33.6  
+5     5                  0.725              27.4                  3.27 
+6     0                  0                   0.336                0.153
+7     6                  0                  20.2                  0.791

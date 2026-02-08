@@ -1,0 +1,29 @@
+# A tibble: 19 × 33
+   category_var      `2013-Q1` `2013-Q2` `2013-Q3` `2013-Q4` `2014-Q1` `2014-Q2`
+   <chr>                 <dbl>     <dbl>     <dbl>     <dbl>     <dbl>     <dbl>
+ 1 Hybrid Entrepren…     0         0        0          0        13.3      34.1  
+ 2 Hybrid Entrepren…     0        30.3     59.2       64.0      39.0      37.1  
+ 3 Hybrid Entrepren…     0         0        0          0         0         0    
+ 4 Hybrid Entrepren…   100        69.7     40.8       36.0      28.2      28.8  
+ 5 Hybrid Entrepren…     0         0        0          0        19.5       0    
+ 6 Non-Entrepreneur…     0.149     0.125    0.0618     0.186     0.284     0.272
+ 7 Non-Entrepreneur…     2.02      2.04     2.05       1.94      1.97      1.90 
+ 8 Non-Entrepreneur…     6.22      6.25     6.05       6.16      6.09      6.25 
+ 9 Non-Entrepreneur…    17.9      17.8     17.2       17.1      17.0      16.8  
+10 Non-Entrepreneur…    25.1      25.0     25.4       25.4      25.9      25.6  
+11 Non-Entrepreneur…    28.4      28.3     28.4       28.4      28.5      28.5  
+12 Non-Entrepreneur…    20.3      20.5     20.8       20.8      20.4      20.7  
+13 Poly-Entrepreneu…     0         0        0          0         0         0    
+14 Poly-Entrepreneu…     0         0        0          0         0         0    
+15 Poly-Entrepreneu…     0        28.4     21.7       12.6      35.5      39.9  
+16 Poly-Entrepreneu…    34.2      54.4     41.4       37.0      31.4      43.1  
+17 Poly-Entrepreneu…     9.84      5.18    11.1       36.9      26.7      11.6  
+18 Poly-Entrepreneu…    24.7      12.0     12.9        8.09      6.43      5.44 
+19 Poly-Entrepreneu…    31.2       0       12.9        5.38      0         0    
+# ℹ 26 more variables: `2014-Q3` <dbl>, `2014-Q4` <dbl>, `2015-Q1` <dbl>,
+#   `2015-Q2` <dbl>, `2015-Q3` <dbl>, `2015-Q4` <dbl>, `2016-Q1` <dbl>,
+#   `2016-Q2` <dbl>, `2016-Q3` <dbl>, `2016-Q4` <dbl>, `2017-Q1` <dbl>,
+#   `2017-Q2` <dbl>, `2017-Q3` <dbl>, `2017-Q4` <dbl>, `2018-Q1` <dbl>,
+#   `2018-Q2` <dbl>, `2018-Q3` <dbl>, `2018-Q4` <dbl>, `2019-Q1` <dbl>,
+#   `2019-Q2` <dbl>, `2019-Q3` <dbl>, `2019-Q4` <dbl>, `2020-Q1` <dbl>,
+#   `2020-Q2` <dbl>, `2020-Q3` <dbl>, `2020-Q4` <dbl>

@@ -1,0 +1,9 @@
+# A tibble: 6 × 4
+  ddipl `Hybrid Entrepreneurs` `Non-Entrepreneurs` `Poly-Entrepreneurs`
+  <dbl>                  <dbl>               <dbl>                <dbl>
+1     1                  25.5                24.2                 40.9 
+2     3                  26.4                16.2                 16.0 
+3     4                  12.4                20.2                 19.8 
+4     5                  31.5                23.5                 11.9 
+5     7                   4.23               11.0                  5.02
+6     6                   0                   4.81                 6.36

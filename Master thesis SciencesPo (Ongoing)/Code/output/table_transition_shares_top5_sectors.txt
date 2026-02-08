@@ -1,0 +1,14 @@
+# A tibble: 643 × 6
+   date       year_quarter transition_type          count total_active   share
+   <date>     <chr>        <chr>                    <dbl>        <dbl>   <dbl>
+ 1 2013-04-01 2013-Q2      No transition         9842428.    13598897. 72.4   
+ 2 2013-04-01 2013-Q2      wage_only → self_wage   42702.    13598897.  0.314 
+ 3 2013-04-01 2013-Q2      wage_wage → wage_only   22653.    13598897.  0.167 
+ 4 2013-04-01 2013-Q2      wage_only → wage_self   21764.    13598897.  0.160 
+ 5 2013-04-01 2013-Q2      self_wage → wage_only   19662.    13598897.  0.145 
+ 6 2013-04-01 2013-Q2      wage_only → self_only   11373.    13598897.  0.0836
+ 7 2013-04-01 2013-Q2      self_only → self_self    7471.    13598897.  0.0549
+ 8 2013-04-01 2013-Q2      wage_wage → self_wage    6738.    13598897.  0.0495
+ 9 2013-04-01 2013-Q2      self_only → wage_wage    4744.    13598897.  0.0349
+10 2013-04-01 2013-Q2      wage_self → wage_only    3834.    13598897.  0.0282
+# ℹ 633 more rows

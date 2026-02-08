@@ -1,0 +1,7 @@
+# A tibble: 3 × 12
+  entrepreneur_type      `00`      AZ       BE      FZ       GI      JZ       KZ
+  <fct>                 <dbl>   <dbl>    <dbl>   <dbl>    <dbl>   <dbl>    <dbl>
+1 Hybrid Entreprene…   0       0.0833 2.24 e-3  0.0109 3.35 e-3  0.0359 4.01 e-3
+2 Poly-Entrepreneurs   0.0484  0.167  2.50 e-2  0.0607 4.19 e-2  0.128  3.29 e-2
+3 Non-Entrepreneurs  100.0    99.8    1.000e+2 99.9    1.000e+2 99.8    1.000e+2
+# ℹ 4 more variables: LZ <dbl>, MN <dbl>, OQ <dbl>, RU <dbl>

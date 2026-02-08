@@ -1,0 +1,20 @@
+# A tibble: 352 × 98
+   date       nafg010n `2013-Q1_Non-Entrepreneurs` `2013-Q1_Poly-Entrepreneurs`
+   <date>     <fct>                          <dbl>                        <dbl>
+ 1 2013-01-01 RU                          1615548.                         528.
+ 2 2013-04-01 RU                                0                            0 
+ 3 2013-07-01 RU                                0                            0 
+ 4 2013-10-01 RU                                0                            0 
+ 5 2014-01-01 RU                                0                            0 
+ 6 2014-04-01 RU                                0                            0 
+ 7 2014-07-01 RU                                0                            0 
+ 8 2014-10-01 RU                                0                            0 
+ 9 2015-01-01 RU                                0                            0 
+10 2015-04-01 RU                                0                            0 
+# ℹ 342 more rows
+# ℹ 94 more variables: `2013-Q2_Hybrid Entrepreneurs` <dbl>,
+#   `2013-Q2_Non-Entrepreneurs` <dbl>, `2013-Q2_Poly-Entrepreneurs` <dbl>,
+#   `2013-Q3_Hybrid Entrepreneurs` <dbl>, `2013-Q3_Non-Entrepreneurs` <dbl>,
+#   `2013-Q3_Poly-Entrepreneurs` <dbl>, `2013-Q4_Hybrid Entrepreneurs` <dbl>,
+#   `2013-Q4_Non-Entrepreneurs` <dbl>, `2013-Q4_Poly-Entrepreneurs` <dbl>,
+#   `2014-Q1_Hybrid Entrepreneurs` <dbl>, `2014-Q1_Non-Entrepreneurs` <dbl>, …

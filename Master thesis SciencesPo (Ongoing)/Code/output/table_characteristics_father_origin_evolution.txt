@@ -1,0 +1,20 @@
+# A tibble: 27 × 33
+   category_var      `2013-Q1` `2013-Q2` `2013-Q3` `2013-Q4` `2014-Q1` `2014-Q2`
+   <chr>                 <dbl>     <dbl>     <dbl>     <dbl>     <dbl>     <dbl>
+ 1 Hybrid Entrepren…    100       100        68.2      67.7      56.0      77.1 
+ 2 Hybrid Entrepren…      0         0        31.8      32.3      24.5      22.9 
+ 3 Hybrid Entrepren…      0         0         0         0         0         0   
+ 4 Hybrid Entrepren…      0         0         0         0         0         0   
+ 5 Hybrid Entrepren…      0         0         0         0        19.5       0   
+ 6 Hybrid Entrepren…      0         0         0         0         0         0   
+ 7 Hybrid Entrepren…      0         0         0         0         0         0   
+ 8 Non-Entrepreneur…     78.4      78.5      78.7      78.4      78.5      78.5 
+ 9 Non-Entrepreneur…      1.09      1.17      1.10      1.15      1.01      1.02
+10 Non-Entrepreneur…      1.24      1.21      1.22      1.16      1.14      1.23
+# ℹ 17 more rows
+# ℹ 26 more variables: `2014-Q3` <dbl>, `2014-Q4` <dbl>, `2015-Q1` <dbl>,
+#   `2015-Q2` <dbl>, `2015-Q3` <dbl>, `2015-Q4` <dbl>, `2016-Q1` <dbl>,
+#   `2016-Q2` <dbl>, `2016-Q3` <dbl>, `2016-Q4` <dbl>, `2017-Q1` <dbl>,
+#   `2017-Q2` <dbl>, `2017-Q3` <dbl>, `2017-Q4` <dbl>, `2018-Q1` <dbl>,
+#   `2018-Q2` <dbl>, `2018-Q3` <dbl>, `2018-Q4` <dbl>, `2019-Q1` <dbl>,
+#   `2019-Q2` <dbl>, `2019-Q3` <dbl>, `2019-Q4` <dbl>, `2020-Q1` <dbl>, …
